@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -54,7 +55,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     }
 
-    public void testInsertUser(String username, String password, String email){
+    public boolean insertUser(String username, String password, String email){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
 
@@ -63,12 +64,32 @@ public class DBHelper extends SQLiteOpenHelper {
         cv.put("email", email);
         long result = db.insert("Users", null, cv);
         if(result==-1){
-            System.out.println("fail");
+            return false;
         }
         else{
-            System.out.println("success");
+            return true;
         }
 
 
     }
+
+    public boolean usernameExists(String username){
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM Users where username = ?",
+                new String[]{username});
+        if(cursor.getCount()>0)
+            return true;
+        return false;
+    }
+
+    public boolean checkLogin(String username, String password){
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM Users WHERE " +
+                "username=? AND password=?", new String[]{username, password});
+
+        if(cursor.getCount()==1)
+            return true;
+        return false;
+    }
+
 }
