@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 import android.os.Bundle;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,6 +18,7 @@ import com.example.myapplication.databinding.ActivityMainBinding;
 
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,6 +33,19 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         setSupportActionBar(binding.toolbar);
+
+        TextView username = findViewById(R.id.username);
+        TextView email = findViewById(R.id.email);
+        TextView password = findViewById(R.id.password);
+        TextView passwordconfirmation = findViewById(R.id.passwordconfirm);
+        TextView kcal = findViewById(R.id.kcal);
+        TextView card1 = findViewById(R.id.card1);
+
+        MaterialButton plusbtn = (MaterialButton) findViewById(R.id.plusbtn);
+
+        MaterialButton signupbtn = (MaterialButton) findViewById(R.id.signupbtn);
+
+        MaterialButton loginbtn = (MaterialButton) findViewById(R.id.loginbtn);
 
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
