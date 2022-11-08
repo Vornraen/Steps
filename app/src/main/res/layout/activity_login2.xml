@@ -72,13 +72,13 @@
         android:backgroundTint="#8000ff"
         android:text="Login" />
 
-    <TextView
-        android:id="@+id/forgotpass"
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/registerbtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/loginbtn"
         android:layout_centerHorizontal="true"
-        android:text="Forgot password"
+        android:text="Register"
         android:textColor="@color/white" />
 
 

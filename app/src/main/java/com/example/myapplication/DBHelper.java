@@ -37,12 +37,12 @@ public class DBHelper extends SQLiteOpenHelper {
 
         sqLiteDatabase.execSQL("CREATE TABLE UsersWork(userWorkId INTEGER primary key not null," +
                 " username TEXT not null, workName TEXT not null, workDuration INTEGER not null, " +
-                "dateTime TEXT not null, " +
-                "foreign key(usename) references Users(username))");
+                " dateTime TEXT not null, " +
+                " foreign key(username) references Users(username))");
 
         sqLiteDatabase.execSQL("CREATE TABLE Work(workId INTEGER primary key not null," +
                 " caloriesPerHours INTEGER not null, " +
-                "workName TEXT not null)");
+                " workName TEXT not null)");
     }
 
     @Override
