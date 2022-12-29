@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
         btnlogin = (Button) findViewById(R.id.loginbtn);
         btnRegister= (Button) findViewById(R.id.registerbtn);
         DB = new DBHelper(this);
+      // System.out.println(DB.calorieCounter("h"));
         btnlogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
                     if(checkuserpass==true){
                         Toast.makeText(MainActivity.this, "Sign in successfull", Toast.LENGTH_SHORT).show();
                         Intent intent  = new Intent(getApplicationContext(), HomeActivity.class);
+                        intent.putExtra("intname", user);
                         startActivity(intent);
                     }else{
                         Toast.makeText(MainActivity.this, "Invalid Credentials", Toast.LENGTH_SHORT).show();
