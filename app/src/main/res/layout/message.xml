@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black"
+    tools:context=".MainActivity">
+
+
+    <TextView
+        android:id="@+id/SelectFood"
+        android:layout_width="230dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="53dp"
+        android:layout_marginTop="80dp"
+        android:layout_marginBottom="478dp"
+        android:text="Select Food"
+        android:textColor="#8000ff"
+        android:textSize="30dp"
+        app:layout_constraintBottom_toTopOf="@+id/back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Spinner
+        android:id="@+id/SpinnerF"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_below="@+id/SelectFood"
+        android:layout_marginStart="53dp"
+        android:layout_marginEnd="53dp"
+        android:layout_marginBottom="107dp"
+        android:background="@drawable/style_spinnerf"
+        android:tooltipText="Select Food"
+        app:layout_constraintBottom_toTopOf="@+id/Grame"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/SelectFood" />
+
+    <EditText
+        android:id="@+id/Grame"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="53dp"
+        android:layout_marginEnd="53dp"
+        android:layout_marginBottom="240dp"
+        android:hint="g."
+        android:inputType="number"
+        android:textColor="#8000ff"
+        android:textColorHint="#8000ff"
+        android:textSize="25dp"
+        app:layout_constraintBottom_toTopOf="@+id/submitbtn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/SpinnerF" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/submitbtn"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_below="@+id/Grame"
+        android:layout_marginEnd="37dp"
+        android:layout_marginBottom="60dp"
+        android:backgroundTint="#8000ff"
+        android:text="Submit"
+        android:textSize="13dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/back"
+        app:layout_constraintTop_toBottomOf="@+id/Grame" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/back"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_below="@+id/Grame"
+        android:layout_marginStart="53dp"
+        android:layout_marginEnd="89dp"
+        android:layout_marginBottom="60dp"
+        android:backgroundTint="#8000ff"
+        android:text="Back"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/submitbtn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/SelectFood" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
