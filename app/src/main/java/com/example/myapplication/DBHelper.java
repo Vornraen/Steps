@@ -11,8 +11,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class DBHelper extends SQLiteOpenHelper {
 
@@ -30,14 +33,14 @@ public class DBHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL("CREATE TABLE Users(username TEXT not null primary key, password TEXT not null, " +
                 "email TEXT not null)");
 
-        sqLiteDatabase.execSQL("CREATE TABLE UsersEat(userEatId INTEGER primary key not null, " +
-                "username TEXT not null,foodName TEXT not null, dose INTEGER not null, calories INTEGER not null, " +
-                "dateTime TEXT not null, foreign key(username) references" +
-                " Users(username))");
+            sqLiteDatabase.execSQL("CREATE TABLE UsersEat(userEatId INTEGER primary key AUTOINCREMENT not null, " +
+                    "username TEXT not null,foodName TEXT not null, dose INTEGER not null, calories INTEGER not null, " +
+                    "dateTime TEXT not null, foreign key(username) references" +
+                    " Users(username))");
 
         sqLiteDatabase.execSQL("SELECT * FROM UsersEat");
 
-        sqLiteDatabase.execSQL("CREATE TABLE Food(foodId INTEGER primary key not null," +
+        sqLiteDatabase.execSQL("CREATE TABLE Food(foodId INTEGER primary key AUTOINCREMENT not null," +
                 " caloriesPerKG INTEGER not null, foodName TEXT not null)");
 
         sqLiteDatabase.execSQL("INSERT INTO Food (foodId, caloriesPerKG, foodName) VALUES \n" +
@@ -62,12 +65,12 @@ public class DBHelper extends SQLiteOpenHelper {
                 "(19, 588, 'Peanut butter'), \n" +
                 "(20, 546, 'Dark chocolate');");
 
-        sqLiteDatabase.execSQL("CREATE TABLE UsersWork(userWorkId INTEGER primary key not null," +
+        sqLiteDatabase.execSQL("CREATE TABLE UsersWork(userWorkId INTEGER primary key AUTOINCREMENT not null," +
                 " username TEXT not null, workName TEXT not null, workDuration INTEGER not null, " +
-                " dateTime TEXT not null, " +
+                " dateTime TEXT not null, calories INTEGER not null, " +
                 " foreign key(username) references Users(username))");
 
-        sqLiteDatabase.execSQL("CREATE TABLE Work(workId INTEGER primary key not null," +
+        sqLiteDatabase.execSQL("CREATE TABLE Work(workId INTEGER primary key AUTOINCREMENT not null," +
                 " caloriesPerHours INTEGER not null, " +
                 " workName TEXT not null)");
 
@@ -99,7 +102,13 @@ public class DBHelper extends SQLiteOpenHelper {
                 "       (3, 'john.doe', 'Milk', 250, 63, '2022-01-01 13:00:00'),\n" +
                 "       (4, 'john.doe', 'Tomatoes', 14, 18, '2022-01-01 14:00:00'),\n" +
                 "       (5, 'john.doe', 'Pasta', 1000, 131, '2022-01-01 15:00:00');");
-        
+
+        sqLiteDatabase.execSQL("INSERT INTO UsersWork(userWorkId, username, workName, workDuration," +
+                "dateTime, calories) VALUES (1, 'john.doe', 'Running', 30, '2022-06-22 12:00:00', 500),\n" +
+                "(2, 'john.doe', 'Weight lifting', 45, '2022-06-22 13:00:00', 400),\n" +
+                "(3, 'john.doe', 'Yoga', 60, '2022-06-22 14:00:00', 300),\n" +
+                "(4, 'john.doe', 'Swimming', 30, '2022-06-22 15:00:00', 350),\n" +
+                "(5, 'john.doe', 'Biking', 45, '2022-06-23 10:00:00', 450)");
     }
 
     @Override
@@ -154,8 +163,13 @@ public class DBHelper extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery("SELECT SUM(calories) FROM UsersEat WHERE username=?", new String[]{username});
 
         cursor.moveToFirst();
+        int foodCalories = cursor.getInt(0);
+        cursor = db.rawQuery("SELECT SUM(calories) FROM UsersWork WHERE username=?", new String[]{username});
 
-       return cursor.getInt(0);
+        cursor.moveToFirst();
+        int workCalories = cursor.getInt(0);
+
+       return foodCalories- workCalories;
     }
 
     public List<String> foodList(String username) {
@@ -182,5 +196,120 @@ public class DBHelper extends SQLiteOpenHelper {
 
         return foodList;
     }
+
+    public List<String> activityList(String username) {
+        List<String> activityList = new ArrayList<>();
+
+        String query = "SELECT workName, workDuration, ' + ' || calories || ' calories' AS calories " +
+                "FROM UsersWork " +
+                "WHERE username = ?";
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(query, new String[]{username});
+
+        if (cursor.moveToFirst()) {
+            do {
+                String workName = cursor.getString(0);
+                int workDuration = cursor.getInt(1);
+                String calories = cursor.getString(2);
+
+                String work = workName + " - " + workDuration + "" + calories;
+                activityList.add(work);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+
+        return activityList;
+    }
+
+    public ArrayList<String> getFoodList(){
+
+        ArrayList<String> foodl = new ArrayList<>();
+        String query = "SELECT foodName FROM Food";
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(query, new String[]{});
+        if (cursor.moveToFirst()){
+            do {
+                String food = cursor.getString(0);
+                foodl.add(food);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+
+        return foodl;
+    }
+
+    public void addFood(String username, String foodName, String dose) {
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+        // First, look up the calories per kilogram for the food
+        String query = "SELECT caloriesPerKG FROM Food WHERE foodName = ?";
+        Cursor cursor = sqLiteDatabase.rawQuery(query, new String[] { foodName });
+        int caloriesPerKG = 0;
+        if (cursor.moveToFirst()) {
+            caloriesPerKG = cursor.getInt(0);
+        }
+        cursor.close();
+
+        // Calculate the number of calories based on the dose
+        int calories = (int) (caloriesPerKG * Double.parseDouble(dose)/1000);
+
+        // Insert the new row into the UsersEat table
+        ContentValues values = new ContentValues();
+        values.put("username", username);
+        values.put("foodName", foodName);
+        values.put("dose", dose);
+        values.put("calories", calories);
+        values.put("dateTime", getCurrentDateTime());
+        sqLiteDatabase.insert("UsersEat", null, values);
+    }
+
+    private String getCurrentDateTime() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        return sdf.format(new Date());
+    }
+
+    public ArrayList<String> getWorkList(){
+
+        ArrayList<String> workL = new ArrayList<>();
+        String query = "SELECT workName FROM Work";
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(query, new String[]{});
+        if (cursor.moveToFirst()){
+            do {
+                String work = cursor.getString(0);
+                workL.add(work);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+
+        return workL;
+    }
+
+
+    public void addWork(String username, String workName, String timeSpentDoingWork) {
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+        // First, look up the calories burned per hour for the work
+        String query = "SELECT caloriesPerHours FROM Work WHERE workName = ?";
+        Cursor cursor = sqLiteDatabase.rawQuery(query, new String[] { workName });
+        int caloriesBurnedPerHour = 0;
+        if (cursor.moveToFirst()) {
+            caloriesBurnedPerHour = cursor.getInt(0);
+        }
+        cursor.close();
+
+        // Calculate the number of calories burned based on the time spent doing the work
+        int calories = (int) (caloriesBurnedPerHour * Double.parseDouble(timeSpentDoingWork))/60;
+
+        // Insert the new row into the UsersWork table
+        ContentValues values = new ContentValues();
+        values.put("username", username);
+        values.put("workName", workName);
+        values.put("workDuration", timeSpentDoingWork);
+        values.put("calories", calories);
+        values.put("dateTime", getCurrentDateTime());
+        sqLiteDatabase.insert("UsersWork", null, values);
+    }
+
+
 
 }
